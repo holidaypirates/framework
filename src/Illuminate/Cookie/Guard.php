@@ -87,23 +87,30 @@ class Guard implements HttpKernelInterface {
 						: $this->encrypter->decrypt($cookie);
 	}
 
-	/**
-	 * Decrypt an array based cookie.
-	 *
-	 * @param  array  $cookie
-	 * @return array
-	 */
-	protected function decryptArray(array $cookie)
-	{
-		$decrypted = array();
+    /**
+     * Decrypt an array based cookie.
+     *
+     * @param  array  $cookie
+     * @return array
+     */
+    protected function decryptArray(array $cookie)
+    {
+        $decrypted = array();
 
-		foreach ($cookie as $key => $value)
-		{
-			$decrypted[$key] = $this->encrypter->decrypt($value);
-		}
+        foreach ($cookie as $key => $value)
+        {
+            if (is_array($value))
+            {
+                $decrypted[$key] = $this->decryptArray($value);
+            }
+            else
+            {
+                $decrypted[$key] = $this->encrypter->decrypt($value);
+            }
+        }
 
-		return $decrypted;
-	}
+        return $decrypted;
+    }
 
 	/**
 	 * Encrypt the cookies on an outgoing response.
