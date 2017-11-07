@@ -1,5 +1,6 @@
 <?php namespace Illuminate\Database;
 
+use Illuminate\Support\Str;
 use PDO;
 use Closure;
 use DateTime;
@@ -667,7 +668,17 @@ class Connection implements ConnectionInterface {
 	 */
 	protected function causedByLostConnection(QueryException $e)
 	{
-		return str_contains($e->getPrevious()->getMessage(), 'server has gone away');
+        $message = $e->getMessage();
+
+        return Str::contains($message, [
+            'server has gone away',
+            'no connection to the server',
+            'Lost connection',
+            'is dead or not enabled',
+            'Error while sending',
+            'decryption failed or bad record mac',
+            'SSL connection has been closed unexpectedly',
+        ]);
 	}
 
 	/**
